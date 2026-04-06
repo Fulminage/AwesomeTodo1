@@ -12,16 +12,17 @@ app.use("/api", router);
 
 // Serve static assets from the client build folder
 const buildPath = path.resolve(__dirname, "..", "client", "build");
+console.log("Serving static assets from:", buildPath);
+
 app.use(express.static(buildPath));
 
-// Express 5 catch-all fix:
-// Using a regex (/.*/) instead of the string "*" to avoid any
-// "Missing originalPath" errors in Express 5.
+// Express 5 catch-all fix for SPA routing
 app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(buildPath, "index.html"), (err) => {
+    const indexPath = path.join(buildPath, "index.html");
+    res.sendFile(indexPath, (err) => {
         if (err) {
-            console.error("Error sending index.html:", err.message);
-            res.status(500).send("Error loading the frontend assets.");
+            console.error(`Error sending index.html at ${indexPath}:`, err.message);
+            res.status(500).send("Error loading the frontend assets. Please ensure the client is built.");
         }
     });
 });
