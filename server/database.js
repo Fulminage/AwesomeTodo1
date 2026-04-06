@@ -1,8 +1,6 @@
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const dns = require("dns");
-
-// Mandatory fix for local networks that fail to resolve the MongoDB cluster
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const uri = process.env.MONGODB_URI;
