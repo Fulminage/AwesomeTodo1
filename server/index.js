@@ -16,13 +16,22 @@ console.log("Serving static assets from:", buildPath);
 
 app.use(express.static(buildPath));
 
-// Express 5 catch-all fix for SPA routing
+// SPECIFIC ROOT ROUTE
+app.get("/", (req, res) => {
+    res.sendFile(path.join(buildPath, "index.html"));
+});
+
+// CATCH-ALL ROUTE (Express 5 Compatibility)
+// Use a regex to match all routes for SPA routing.
+// This is the most reliable way to avoid 'Missing originalPath' errors in Express 5.
 app.get(/.*/, (req, res) => {
     const indexPath = path.join(buildPath, "index.html");
     res.sendFile(indexPath, (err) => {
         if (err) {
             console.error(`Error sending index.html at ${indexPath}:`, err.message);
-            res.status(500).send("Error loading the frontend assets. Please ensure the client is built.");
+            if (!res.headersSent) {
+                res.status(500).send("Error loading the frontend assets. Please ensure the client is built.");
+            }
         }
     });
 });
